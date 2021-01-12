@@ -147,8 +147,8 @@ class TestCqlsh(Tester, CqlshMixin):
         p = subprocess.Popen(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
 
-        assert 0 == len(stdout), stdout
-        assert 0 == len(stderr), stderr
+        assert 0 == len(stdout), stdout.decode("utf-8")
+        assert 0 == len(stderr), stderr.decode("utf-8")
 
     def test_simple_insert(self):
 
