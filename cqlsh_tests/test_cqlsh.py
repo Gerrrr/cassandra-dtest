@@ -914,15 +914,20 @@ CREATE OR REPLACE AGGREGATE test.average(int)
     INITCOND (0, 0)
 """
 
-        # create keyspace, scalar function, and aggregate function
+        # create keyspace, scalar function
         self.execute(cql=create_ks_statement)
         self.execute(cql=create_function_statement)
-        self.execute(cql=create_aggregate_dependencies_statement)
-        self.execute(cql=create_aggregate_statement)
+
         # describe scalar functions
         self.execute(cql='DESCRIBE FUNCTION test.some_function', expected_output='{};'.format(create_function_statement))
-        # describe aggregate functions
-        self.execute(cql='DESCRIBE AGGREGATE test.average', expected_output=self.get_describe_aggregate_output())
+
+        if self.cluster.version() >= LooseVersion('3.0'):
+            # create aggregate function
+            self.execute(cql=create_aggregate_dependencies_statement)
+            self.execute(cql=create_aggregate_statement)
+
+            # describe aggregate functions
+            self.execute(cql='DESCRIBE AGGREGATE test.average', expected_output=self.get_describe_aggregate_output())
 
     def get_describe_aggregate_output(self):
         if self.cluster.version() >= LooseVersion("4.0"):
